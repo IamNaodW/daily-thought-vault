@@ -1,9 +1,13 @@
 import mongoose from "mongoose";
 
-const ThoughtSchema = new mongoose.Schema({
-  text: { type: String, required: true },
-  mood: { type: Number, default: 2 }, // 0-4
-  date: { type: Date, default: Date.now },
-});
+const thoughtSchema = new mongoose.Schema({
+  text: String,
+  mood: Number,
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  }
+}, { timestamps: true });
 
-export default mongoose.model("Thought", ThoughtSchema);
+export default mongoose.model("Thought", thoughtSchema);

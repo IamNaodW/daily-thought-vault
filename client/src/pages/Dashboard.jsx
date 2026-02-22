@@ -1,8 +1,10 @@
-import React, { useState, useEffect } from "react";
-import axios from "axios"; 
+import React, { useState, useEffect, useContext } from "react";
+import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import MainEditor from "../components/MainEditor";
 import MobileHeader from "../components/MobileHeader";
+import { AuthContext } from "../context/AuthContext";
 
 export const MOOD_DATA = [
   { emoji: '😫', label: 'Distressed', color: 'text-red-400', bg: 'bg-red-500/10', border: 'border-red-500/50' },
@@ -15,39 +17,78 @@ export const MOOD_DATA = [
 function Dashboard() {
   const [thoughts, setThoughts] = useState([]);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const API_URL = "http://localhost:5000/api/thoughts"; 
 
+  const { user, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const API_URL = "http://localhost:5000/api/thoughts";
+
+  // 🔐 Redirect if not logged in
+  useEffect(() => {
+    if (!user) {
+      navigate("/login");
+    }
+  }, [user, navigate]);
+
+  // 📥 Fetch thoughts for logged-in user
   useEffect(() => {
     const fetchThoughts = async () => {
       try {
-        const response = await axios.get(API_URL);
+        const response = await axios.get(API_URL, {
+          headers: {
+            Authorization: `Bearer ${user?.token}`
+          }
+        });
+
         setThoughts(response.data);
       } catch (err) {
         console.error("Error fetching thoughts:", err);
+
+        // If token invalid → logout
+        if (err.response?.status === 401) {
+          logout();
+          navigate("/login");
+        }
       }
     };
-    fetchThoughts();
-  }, []);
 
-  // ONLY updates state, no POST
+    if (user) {
+      fetchThoughts();
+    }
+  }, [user, logout, navigate]);
+
+  // ✅ Add thought safely (no duplicates)
   const addThought = (savedThought) => {
-    setThoughts([savedThought, ...thoughts]);
+    setThoughts(prev => [savedThought, ...prev]);
     setIsSidebarOpen(false);
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
   };
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-zinc-950 text-zinc-200 font-sans overflow-hidden">
-      <MobileHeader onOpenSidebar={() => setIsSidebarOpen(true)} />
       
-      <Sidebar 
-        thoughts={thoughts} 
-        isOpen={isSidebarOpen} 
-        onClose={() => setIsSidebarOpen(false)}
-        moodData={MOOD_DATA} 
+      <MobileHeader 
+        onOpenSidebar={() => setIsSidebarOpen(true)} 
+        onLogout={handleLogout}
       />
-      
+
+      <Sidebar
+        thoughts={thoughts}
+        isOpen={isSidebarOpen}
+        onClose={() => setIsSidebarOpen(false)}
+        moodData={MOOD_DATA}
+      />
+
       <div className="flex-1 overflow-y-auto">
-        <MainEditor onSave={addThought} moodData={MOOD_DATA} />
+        <MainEditor 
+          onSave={addThought} 
+          moodData={MOOD_DATA}
+          token={user?.token}
+        />
       </div>
     </div>
   );

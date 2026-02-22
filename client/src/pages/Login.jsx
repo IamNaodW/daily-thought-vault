@@ -1,0 +1,79 @@
+import { useState, useContext } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { AuthContext } from "../context/AuthContext";
+import toast from "react-hot-toast";
+
+const Login = () => {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const res = await fetch("http://localhost:5000/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      login(data.token);
+      toast.success("Logged in successfully!");
+      navigate("/");
+    } else {
+      toast.error(data.message || "Login failed");
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-zinc-900">
+      <form
+        onSubmit={handleSubmit}
+        className="bg-zinc-800 p-10 rounded-2xl shadow-lg w-full max-w-sm flex flex-col gap-6"
+      >
+        <h2 className="text-2xl font-bold text-white text-center">Login</h2>
+
+        <input
+          type="email"
+          placeholder="Email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          className="p-3 rounded-lg bg-zinc-700 text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          required
+        />
+
+        <input
+          type="password"
+          placeholder="Password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+          className="p-3 rounded-lg bg-zinc-700 text-white placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+          required
+        />
+
+        <button
+          type="submit"
+          className="w-full py-3 bg-emerald-600 text-white font-bold rounded-lg hover:bg-emerald-500 transition-all active:scale-95"
+        >
+          Login
+        </button>
+
+        <p className="text-sm text-zinc-400 text-center">
+          Don't have an account?{" "}
+          <Link
+            to="/register"
+            className="text-emerald-500 hover:underline font-semibold"
+          >
+            Register
+          </Link>
+        </p>
+      </form>
+    </div>
+  );
+};
+
+export default Login;
