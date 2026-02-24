@@ -14,6 +14,7 @@ app.use(express.json());
 // Routes
 app.use("/api/thoughts", thoughtsRoutes);
 app.use("/api/auth", authRoutes);
+
 // MongoDB connection
 mongoose
   .connect(process.env.MONGO_URI)

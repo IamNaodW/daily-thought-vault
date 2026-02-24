@@ -13,7 +13,7 @@ function Sidebar({ thoughts = [], isOpen, onClose, moodData }) {
       )}
 
       <aside className={`
-        fixed inset-y-0 left-0 z-50 w-72 bg-zinc-950 border-r border-zinc-800 p-6 
+        fixed inset-y-0 left-0 z-50 w-72 bg-zinc-950 border-r border-zinc-800 p-6
         transition-transform duration-300 ease-in-out transform flex flex-col
         ${isOpen ? "translate-x-0" : "-translate-x-full"}
         md:relative md:translate-x-0 md:flex
@@ -29,7 +29,7 @@ function Sidebar({ thoughts = [], isOpen, onClose, moodData }) {
 
         {/* Scrollable History Section */}
         <nav className="flex-1 overflow-y-auto pr-2 custom-scrollbar">
-          <p className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold mb-4 sticky top-0 bg-zinc-950 py-1">
+          <p className="text-[10px] uppercase tracking-widest text-zinc-500 font-bold mb-4 sticky top-0 bg-zinc-950 py-1 z-10">
             Vault History
           </p>
 
@@ -39,10 +39,10 @@ function Sidebar({ thoughts = [], isOpen, onClose, moodData }) {
             ) : (
               thoughts.map((t, idx) => (
                 <ThoughtCard 
-                  key={idx} 
-                  date={new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} 
-                  text={t.text} 
-                  moodEmoji={moodData[t.mood]?.emoji} 
+                  key={idx}
+                  date={t.createdAt || t.date}  // raw date from API
+                  text={t.text}
+                  moodEmoji={moodData[t.mood]?.emoji}
                 />
               ))
             )}

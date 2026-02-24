@@ -1,16 +1,13 @@
-import { createContext, useState, useEffect } from "react";
+import { createContext, useState } from "react";
+
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  
-  useEffect(() => {
+  // Initialize state directly from localStorage so it's ready on the first render
+  const [user, setUser] = useState(() => {
     const token = localStorage.getItem("token");
-    
-    if (token) {
-      setUser({ token }); 
-    }
-  }, []);
+    return token ? { token } : null;
+  });
 
   const login = (token) => {
     localStorage.setItem("token", token);

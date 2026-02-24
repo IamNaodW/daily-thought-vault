@@ -32,4 +32,35 @@ router.get("/", auth, async (req, res) => {
   }
 });
 
+// UPDATE a thought
+router.put('/:id', auth, async (req, res) => {
+  try {
+    const updatedThought = await Thought.findOneAndUpdate(
+      { _id: req.params.id, user: req.user.id }, 
+      { text: req.body.text },
+      { returnDocument: 'after' } // Updated this line to remove the warning
+    );
+    if (!updatedThought) return res.status(404).json({ msg: "Thought not found" });
+    res.json(updatedThought);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// DELETE a thought
+router.delete('/:id', auth, async (req, res) => {
+  try {
+    const deletedThought = await Thought.findOneAndDelete({ 
+      _id: req.params.id, 
+      // Change userId to user
+      user: req.user.id 
+    });
+
+    if (!deletedThought) return res.status(404).json({ msg: "Thought not found" });
+    res.json({ message: "Thought deleted successfully" });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 export default router;
