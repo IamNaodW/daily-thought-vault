@@ -3,19 +3,24 @@ import { createContext, useState } from "react";
 export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  // Initialize state directly from localStorage so it's ready on the first render
   const [user, setUser] = useState(() => {
-    const token = localStorage.getItem("token");
-    return token ? { token } : null;
+    const savedUser = localStorage.getItem("user");
+    try {
+      // If we find a saved user object, parse it. If not, return null.
+      return savedUser ? JSON.parse(savedUser) : null;
+    } catch (error) {
+      return null;
+    }
   });
 
-  const login = (token) => {
-    localStorage.setItem("token", token);
-    setUser({ token });
+  // login now expects ONE argument: an object { token, username }
+  const login = (userData) => {
+    localStorage.setItem("user", JSON.stringify(userData));
+    setUser(userData);
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
+    localStorage.removeItem("user");
     setUser(null);
   };
 

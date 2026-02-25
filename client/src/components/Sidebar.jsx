@@ -1,7 +1,28 @@
-import React from "react";
+import React, { useState, useEffect, useContext } from "react";
 import ThoughtCard from "./ThoughtCard";
+import axios from "axios";
+import { AuthContext } from "../context/AuthContext";
 
 function Sidebar({ thoughts = [], isOpen, onClose, moodData }) {
+  const { user } = useContext(AuthContext);
+  const [streak, setStreak] = useState(0);
+
+  // Fetch real streak from Backend
+  useEffect(() => {
+    const fetchStreak = async () => {
+      if (!user) return;
+      try {
+        const res = await axios.get("http://localhost:5000/api/thoughts/streak", {
+          headers: { Authorization: `Bearer ${user.token}` },
+        });
+        setStreak(res.data.streak);
+      } catch (err) {
+        console.error("Error fetching streak:", err);
+      }
+    };
+
+    fetchStreak();
+  }, [user, thoughts]);
   return (
     <>
       {/* Mobile Overlay */}
@@ -49,13 +70,17 @@ function Sidebar({ thoughts = [], isOpen, onClose, moodData }) {
           </div>
         </nav>
 
-        {/* Streak Counter - always visible */}
+        {/* Streak Counter Section */}
         <div className="mt-4 pt-4 border-t border-zinc-800 shrink-0">
           <div className="flex items-center gap-3 bg-zinc-900/80 p-4 rounded-2xl border border-zinc-800">
-            <span className="text-2xl">🔥</span>
+            {/* Dynamic Icon based on streak */}
+            <span className="text-2xl">{streak > 0 ? "🔥" : "❄️"}</span>
             <div>
               <p className="text-xs text-zinc-500 uppercase font-bold tracking-tighter">Streak</p>
-              <p className="text-lg font-bold text-white">{thoughts.length > 0 ? '1' : '0'} Days</p>
+              {/* DISPLAY THE FETCHED STREAK */}
+              <p className="text-lg font-bold text-white">
+                {streak} {streak === 1 ? "Day" : "Days"}
+              </p>
             </div>
           </div>
         </div>

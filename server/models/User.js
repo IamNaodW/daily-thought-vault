@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  bio:{type: String, default: ""}
 }, { timestamps: true });
 
 export default mongoose.model("User", userSchema);

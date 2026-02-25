@@ -63,4 +63,47 @@ router.delete('/:id', auth, async (req, res) => {
   }
 });
 
+router.get("/streak", auth, async (req, res) => {
+  try {
+    const thoughts = await Thought.find({ user: req.user.id }).sort({ createdAt: -1 });
+    
+    if (thoughts.length === 0) return res.json({ streak: 0 });
+
+    const dates = [...new Set(thoughts.map(t => 
+      new Date(t.createdAt).toISOString().split('T')[0]
+    ))];
+
+    let streak = 0;
+    let curr = new Date();
+    
+    // Check today
+    const today = curr.toISOString().split('T')[0];
+    curr.setDate(curr.getDate() - 1);
+    const yesterday = curr.toISOString().split('T')[0];
+
+    // If no post today AND no post yesterday, streak is 0
+    if (dates[0] !== today && dates[0] !== yesterday) {
+      return res.json({ streak: 0 });
+    }
+
+    // Start checking from the most recent active day
+    let checkDate = new Date(dates[0]);
+    
+    for (let i = 0; i < dates.length; i++) {
+      const dateStr = checkDate.toISOString().split('T')[0];
+      if (dates.includes(dateStr)) {
+        streak++;
+        checkDate.setDate(checkDate.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+
+    res.json({ streak });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+
 export default router;

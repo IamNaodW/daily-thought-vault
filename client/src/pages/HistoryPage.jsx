@@ -80,17 +80,36 @@ function HistoryPage() {
               return (
                 <div key={t._id} className="group relative bg-zinc-900/30 border border-zinc-800/50 p-6 rounded-3xl hover:bg-zinc-900/50 transition-all duration-300">
                   <div className="flex justify-between items-start mb-4">
-                    <span className="text-2xl">{mood.emoji}</span>
+                    <div className="flex items-center gap-4">
+                      <span className="text-2xl">{mood.emoji}</span>
+                      <div className="flex flex-col">
+                        {/* DATE DISPLAY */}
+                        <span className="text-[10px] uppercase tracking-[0.2em] font-bold text-zinc-500">
+                          {new Date(t.createdAt).toLocaleDateString('en-US', { 
+                            month: 'long', 
+                            day: 'numeric',
+                            year: 'numeric' 
+                          })}
+                        </span>
+                        <span className="text-[10px] text-zinc-600 font-mono">
+                          {new Date(t.createdAt).toLocaleTimeString('en-US', { 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                          })}
+                        </span>
+                      </div>
+                    </div>
+                        
                     <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button 
                         onClick={() => { setEditingThought({ id: t._id, text: t.text }); setIsEditModalOpen(true); }}
-                        className="p-2 hover:bg-emerald-500/10 rounded-full text-zinc-500 hover:text-emerald-400"
+                        className="p-2 hover:bg-emerald-500/10 rounded-full text-zinc-500 hover:text-emerald-400 transition-colors"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                       </button>
                       <button 
                         onClick={() => { setDeletingId(t._id); setIsDeleteModalOpen(true); }}
-                        className="p-2 hover:bg-red-500/10 rounded-full text-zinc-500 hover:text-red-400"
+                        className="p-2 hover:bg-red-500/10 rounded-full text-zinc-500 hover:text-red-400 transition-colors"
                       >
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                       </button>

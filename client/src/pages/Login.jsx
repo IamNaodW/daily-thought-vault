@@ -21,7 +21,7 @@ const Login = () => {
     const data = await res.json();
 
     if (res.ok) {
-      login(data.token);
+      login(data);
       toast.success("Logged in successfully!");
       navigate("/");
     } else {

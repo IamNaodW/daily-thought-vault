@@ -24,7 +24,7 @@ const BottomNav = () => {
   ];
 
   return (
-    <div className="fixed bottom-6 left-0 right-0 flex justify-center z-30 px-6 pointer-events-none">
+    <div className="fixed bottom-6 left-0 right-0 flex justify-center z-[70] px-6 pointer-events-none">
       <nav className="bg-zinc-900/90 backdrop-blur-xl border border-zinc-800/50 py-3 px-8 rounded-full shadow-2xl shadow-black/50 flex items-center gap-10 pointer-events-auto">
         {menuItems.map((item) => {
           const active = location.pathname === item.path;
